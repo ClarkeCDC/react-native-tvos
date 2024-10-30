@@ -10,6 +10,7 @@
 
 import type {RNTesterModuleInfo} from './types/RNTesterTypes';
 
+import {I18nManager} from '../../react-native';
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
@@ -28,12 +29,12 @@ import {
 import * as React from 'react';
 import {
   BackHandler,
-  Platform,
   Linking,
+  Platform,
   StyleSheet,
-  useColorScheme,
   TVEventControl,
   View,
+  useColorScheme,
 } from 'react-native';
 
 // RNTester App currently uses in memory storage for storing navigation state
@@ -207,6 +208,11 @@ const RNTesterApp = ({
     const subscription = Linking.addEventListener('url', handleOpenUrlRequest);
     return () => subscription.remove();
   }, [handleOpenUrlRequest]);
+
+  React.useEffect(() => {
+    I18nManager.allowRTL(true);
+    I18nManager.forceRTL(true);
+  }, []);
 
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
 

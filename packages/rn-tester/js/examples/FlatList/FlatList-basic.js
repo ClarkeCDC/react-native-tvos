@@ -16,6 +16,7 @@ import type {AnimatedComponentType} from 'react-native/Libraries/Animated/create
 import typeof FlatListType from 'react-native/Libraries/Lists/FlatList';
 import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
 
+import {ScrollView, Text, TouchableOpacity} from '../../../../react-native';
 import {
   FooterComponent,
   HeaderComponent,
@@ -45,8 +46,8 @@ import {
 } from 'react-native';
 import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
-const PAGE_SIZE = 100;
-const NUM_PAGES = 10;
+const PAGE_SIZE = 10; // Change to 3 to see bug no longer occurs when contentSize doesnt exceed visisbleSize
+const NUM_PAGES = 2;
 const INITIAL_PAGE_OFFSET = Math.floor(NUM_PAGES / 2);
 const LOAD_TIME = 2000;
 
@@ -87,7 +88,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     first: PAGE_SIZE * INITIAL_PAGE_OFFSET,
     last: PAGE_SIZE + PAGE_SIZE * INITIAL_PAGE_OFFSET,
     debug: false,
-    horizontal: false,
+    horizontal: true,
     inverted: false,
     filterText: '',
     fixedHeight: true,
@@ -246,55 +247,76 @@ class FlatListExample extends React.PureComponent<Props, State> {
             </View>
           </View>
           <SeparatorComponent />
-          <Animated.FlatList
-            fadingEdgeLength={this.state.fadingEdgeLength}
-            ItemSeparatorComponent={
-              this.state.horizontal ? null : ItemSeparatorComponent
-            }
-            ListHeaderComponent={
-              this.state.previousLoading ? LoadingComponent : HeaderComponent
-            }
-            ListFooterComponent={
-              this.state.nextLoading ? LoadingComponent : FooterComponent
-            }
-            ListEmptyComponent={ListEmptyComponent}
-            // $FlowFixMe[missing-empty-array-annot]
-            data={this.state.empty ? [] : filteredData}
-            debug={this.state.debug}
-            disableVirtualization={!this.state.virtualized}
-            getItemLayout={
-              this.state.fixedHeight ? this._getItemLayout : undefined
-            }
-            accessibilityRole="list"
-            horizontal={this.state.horizontal}
-            inverted={this.state.inverted}
-            key={
-              (this.state.horizontal ? 'h' : 'v') +
-              (this.state.fixedHeight ? 'f' : 'd')
-            }
-            keyboardShouldPersistTaps="always"
-            keyboardDismissMode="on-drag"
-            numColumns={1}
-            onStartReached={this._onStartReached}
-            initialScrollIndex={Math.floor(PAGE_SIZE / 2)}
-            onEndReached={this._onEndReached}
-            onRefresh={this._onRefresh}
-            onScroll={
-              this.state.horizontal ? this._scrollSinkX : this._scrollSinkY
-            }
-            onScrollToIndexFailed={this._onScrollToIndexFailed}
-            onViewableItemsChanged={this._onViewableItemsChanged}
-            ref={this._captureRef}
-            refreshing={false}
-            contentContainerStyle={styles.list}
-            viewabilityConfig={VIEWABILITY_CONFIG}
-            maintainVisibleContentPosition={
-              this.state.maintainVisibleContentPosition
-                ? {minIndexForVisible: 0}
-                : undefined
-            }
-            {...flatListItemRendererProps}
-          />
+          <View style={{flex: 1, flexDirection: 'row', maxWidth: '80%'}}>
+            <TouchableOpacity>
+              <View style={{backgroundColor: 'red', width: 100, height: 100}}>
+                <Text>{I18nManager.isRTL ? 'RTL' : 'LTR'}</Text>
+              </View>
+            </TouchableOpacity>
+            <ScrollView>
+              <View style={{transform: [{scaleX: 1}]}}>
+                <Animated.FlatList
+                  fadingEdgeLength={this.state.fadingEdgeLength}
+                  ItemSeparatorComponent={
+                    this.state.horizontal ? null : ItemSeparatorComponent
+                  }
+                  ListHeaderComponent={
+                    this.state.previousLoading
+                      ? LoadingComponent
+                      : HeaderComponent
+                  }
+                  ListFooterComponent={
+                    this.state.nextLoading ? LoadingComponent : FooterComponent
+                  }
+                  ListEmptyComponent={ListEmptyComponent}
+                  // $FlowFixMe[missing-empty-array-annot]
+                  data={this.state.empty ? [] : filteredData}
+                  debug={this.state.debug}
+                  disableVirtualization={!this.state.virtualized}
+                  getItemLayout={
+                    this.state.fixedHeight ? this._getItemLayout : undefined
+                  }
+                  accessibilityRole="list"
+                  horizontal={this.state.horizontal}
+                  inverted={this.state.inverted}
+                  key={
+                    (this.state.horizontal ? 'h' : 'v') +
+                    (this.state.fixedHeight ? 'f' : 'd')
+                  }
+                  keyboardShouldPersistTaps="always"
+                  keyboardDismissMode="on-drag"
+                  numColumns={1}
+                  onStartReached={this._onStartReached}
+                  initialScrollIndex={Math.floor(PAGE_SIZE / 2)}
+                  onEndReached={this._onEndReached}
+                  onRefresh={this._onRefresh}
+                  onScroll={
+                    this.state.horizontal
+                      ? this._scrollSinkX
+                      : this._scrollSinkY
+                  }
+                  onScrollToIndexFailed={this._onScrollToIndexFailed}
+                  onViewableItemsChanged={this._onViewableItemsChanged}
+                  ref={this._captureRef}
+                  refreshing={false}
+                  contentContainerStyle={styles.list}
+                  // style={{transform: [{scaleX: 1}]}}
+                  viewabilityConfig={VIEWABILITY_CONFIG}
+                  maintainVisibleContentPosition={
+                    this.state.maintainVisibleContentPosition
+                      ? {minIndexForVisible: 0}
+                      : undefined
+                  }
+                  {...flatListItemRendererProps}
+                />
+              </View>
+            </ScrollView>
+            <TouchableOpacity>
+              <View style={{backgroundColor: 'red', width: 100, height: 100}}>
+                <Text>{I18nManager.isRTL ? 'RTL' : 'LTR'}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </RNTesterPage>
     );
